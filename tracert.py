@@ -27,14 +27,16 @@ def tracert(address, id=None):
         packets_sent = 0
         rtts = []
         for i in range(PING_COUNT):
-            icmp_request = ICMPRequest(destination=address, id=id, sequence=0, ttl=23)
+            icmp_request = ICMPRequest(destination=address, id=id, sequence=0, ttl=ttl)
             start = time()
             sock.send(icmp_request)
             reply = sock.receive(timeout=PING_TIMEOUT)
-            rtts.append((reply.time-start)*1000)
+            # print(reply)
+            if reply:
+                rtts.append((reply.time-start)*1000)
             packets_sent += 1
             sleep(PING_INTERVAL)
-        if reply.source == address:
+        if reply and reply.source == address:
             host_reached = True
         ###############################
         # TODO:
@@ -61,6 +63,9 @@ def tracert(address, id=None):
                 distance=ttl)
 
             hops.append(hop)
+        else:
+            hop = Hop(address="请求超时", packets_sent=packets_sent, rtts=rtts, distance=ttl)
+            hops.append(hop)
 
         ttl += 1
 
@@ -68,10 +73,10 @@ def tracert(address, id=None):
 
 
 if __name__ == "__main__":
-    # target = sys.argv[1]
-    # parser = argparse.ArgumentParser(description="tracert")
-    # parser.add_argument('--i', type=int, default=None)
-    # args = parser.parse_args(sys.argv[2:])
-    hops = tracert("www.baidu.com", 1)
+    target = sys.argv[1]
+    parser = argparse.ArgumentParser(description="tracert")
+    parser.add_argument('--i', type=int, default=None)
+    args = parser.parse_args(sys.argv[2:])
+    hops = tracert(target, args.i)
     for hop in hops:
         print(hop.__str__())

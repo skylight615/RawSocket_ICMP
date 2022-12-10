@@ -277,8 +277,9 @@ class ICMPSocket:
 
         try:
             while True:
+                # print(self._address)
                 response = self._sock.recvfrom(1024)
-                print(response)
+                # print(response)
                 current_time = time()
 
                 packet = response[0]
@@ -291,14 +292,14 @@ class ICMPSocket:
                     packet=packet,
                     source=source,
                     current_time=current_time)
-
                 if (reply and not request or
                     reply and request.id == reply.id and
                     request.sequence == reply.sequence):
                     return reply
 
         except socket.timeout:
-            raise TimeoutExceeded(timeout)
+            return None
+            # raise TimeoutExceeded(timeout)
 
         except OSError as err:
             raise ICMPSocketError(str(err))
