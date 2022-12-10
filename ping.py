@@ -25,7 +25,8 @@ def ping(address, n=4, payload=None, id=None):
 		start = time()
 		sock.send(icmp_request)
 		reply = sock.receive(icmp_request, timeout=PING_TIMEOUT)
-		rtts.append((reply.time-start)*1000)
+		if reply:
+			rtts.append((reply.time-start)*1000)
 		packets_sent += 1
 		sleep(PING_INTERVAL)
 	###############################
