@@ -278,6 +278,7 @@ class ICMPSocket:
         try:
             while True:
                 response = self._sock.recvfrom(1024)
+                print(response)
                 current_time = time()
 
                 packet = response[0]
